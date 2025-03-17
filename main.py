@@ -1,5 +1,7 @@
-from multiprocessing import Pool
+from concurrent.futures import ProcessPoolExecutor
 import time
+from multiprocessing import cpu_count
+
 
 def factorize(number):
     """
@@ -19,7 +21,10 @@ def factorize(number):
                 factors.append(number // i)
     return number, sorted(factors)
 
+
 start_time = time.time()
+
+
 def processing(*numbers):
     """
     This function processes a list of numbers by calculating their factors using multiprocessing.
@@ -31,14 +36,14 @@ def processing(*numbers):
     None
     """
     start_time = time.time()
-    with Pool() as pool:
-        results = pool.map(factorize, numbers)
+    with ProcessPoolExecutor(cpu_count()) as executor:
+        results = executor.map(factorize, numbers)
     end_time = time.time()
     for number, factors in results:
         print(f"The factors of {number} are: {factors}")
     print(f"Time taken: {end_time - start_time:.4f} seconds")
 
-    
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     numbers = [128, 255, 99999, 10651060]
     processing(*numbers)
